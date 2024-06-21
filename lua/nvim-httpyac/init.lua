@@ -1,3 +1,4 @@
+local B = require("nvim-httpyac.buffer")
 local M = {}
 
 local abidibo_nvim_httpyac = vim.api.nvim_create_augroup(
@@ -6,7 +7,6 @@ local abidibo_nvim_httpyac = vim.api.nvim_create_augroup(
 )
 
 M.exec_httpyac = function(opts)
-    local B = require("buffer")
     if opts == nil then
         opts = {}
     end
