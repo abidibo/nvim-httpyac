@@ -33,6 +33,9 @@ return {
 - **NvimHttpYac**: executes the request under the cursor
 - **NvimHttpYacAll**: executes all the requests
 
+Both commands take optional parameters that are passed to `httpyac`.
+E.g. to use a specific dev environment call `:NvimHttpYac --env dev`
+
 ## Credits
 
 This plugin was inspired by the following projects:

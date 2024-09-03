@@ -14,8 +14,16 @@ M.exec_httpyac = function(opts)
         opts.args = { "-a" }
     end
 
+    if opts.userArgs == nil then
+        opts.userArgs = {}
+    end
+
     local str_args = ""
     for _, arg in pairs(opts.args) do
+        str_args = str_args .. " " .. arg
+    end
+
+    for _, arg in pairs(opts.userArgs) do
         str_args = str_args .. " " .. arg
     end
 
@@ -33,14 +41,14 @@ vim.api.nvim_create_autocmd("FileType", {
     group = abidibo_nvim_httpyac,
 
     callback = function()
-        vim.api.nvim_create_user_command('NvimHttpYacAll', function()
-            M.exec_httpyac({ args = { "-a" } })
-        end, {})
+        vim.api.nvim_create_user_command('NvimHttpYacAll', function(opts)
+            M.exec_httpyac({ args = { "-a" }, userArgs = opts.fargs })
+        end, { nargs = "*" })
 
-        vim.api.nvim_create_user_command('NvimHttpYac', function()
+        vim.api.nvim_create_user_command('NvimHttpYac', function(opts)
             local curlineNumber = vim.api.nvim_win_get_cursor(0)[1]
-            M.exec_httpyac({ args = { "-l " .. curlineNumber } })
-        end, {})
+            M.exec_httpyac({ args = { "-l " .. curlineNumber }, userArgs = opts.fargs })
+        end, { nargs = "*" })
     end,
 })
 
