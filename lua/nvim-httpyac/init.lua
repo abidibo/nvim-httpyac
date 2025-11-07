@@ -25,7 +25,7 @@ M.exec_httpyac = function(opts)
     end
 
     -- create a tmp copy of the file
-    local tmp_file_path = vim.fn.expand("%:p:h") .. "/.tmp_" .. vim.fn.expand("%:t")
+    local tmp_file_path = vim.fn.expand("%:p:h") .. "/.tmp_httpyac_" .. vim.fn.expand("%:t")
     -- save current buffer
     vim.api.nvim_command("w! " .. tmp_file_path)
     --
