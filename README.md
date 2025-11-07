@@ -6,10 +6,11 @@ A very simple plugin which integrates [HttpYac](https://httpyac.github.io/) in N
 
 I currently use it to to run REST requests, I don't need much, but I'll add functionalities once I need them.
 
-It basically runs httpyac cli against the current file, executing all request or the one under the cursor, so you can use vars, envs, etc...    
+It basically runs httpyac cli against the current file, executing all request or the one under the cursor, so you can use vars, envs, etc...
 It provides syntax highlighting for the responses.
 
-> Important: You need to have [HttpYac](https://httpyac.github.io/) installed and in path! 
+> [!IMPORTANT]
+> You need to have [HttpYac](https://httpyac.github.io/) installed and in path!
   i.e. `npm install -g httpyac`
 
 ## Installation
@@ -29,6 +30,9 @@ return {
 ```
 
 ## Commands
+
+> [!TIP]
+> It's not mandatory to save the file before running the requests,the current buffer content will be used
 
 - **NvimHttpYac**: executes the request under the cursor
 - **NvimHttpYacAll**: executes all the requests
