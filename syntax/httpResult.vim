@@ -1,7 +1,9 @@
 if exists("b:current_syntax") | finish | endif
 
-syn include @jsonCluster syntax/json.vim
-unlet b:current_syntax
+runtime! syntax/json.vim
+if exists("b:current_syntax")
+  unlet b:current_syntax
+endif
 
 syn match   httpResultComment "\v^#.*$"
 syn keyword httpResultMethod OPTIONS GET HEAD POST PUT DELETE TRACE CONNECT nextgroup=httpResultPath
@@ -20,10 +22,7 @@ syn match  httpResult500 /5\d\d/ nextgroup=httpResultstatus contained
 
 syn match  httpResultStatus /.*$/ contained
 
-syn region httpResultString start=/\vr?"/ end=/\v"/
-syn match  httpResultNumber /\v[ =]@1<=[0-9]*.?[0-9]+[ ,;&\n]/he=e-1
-
-syn region httpResultJsonBody start=/\v(HTTP\/_.\{-}\zs\n\n)/ end=/\v(\n\s*\d+ requests processed)/me=s-1 contains=@jsonCluster
+syn region httpResultJsonBody start=/\v(HTTP\/_.\{-}\zs\n\n)/ end=/\v(\n\s*\d+ requests processed)/me=s-1 contains=jsonString,jsonNumber,jsonBoolean,jsonNull,jsonBraces,jsonBrackets
 
 hi link httpResultComment   @comment
 hi link httpResultMethod    @type
@@ -31,13 +30,10 @@ hi link httpResultPath      @text.uri
 hi link httpResultField     @constant
 hi link httpResultDateField @constant
 hi link httpResultDate      @attribute
-hi link httpResultString    @string
-hi link httpResultNumber    @number
 hi link httpResultHeader    @constant
 hi link httpResult200       Msg
 hi link httpResult300       MoreMsg
 hi link httpResult400       WarningMsg
 hi link httpResult500       ErrorMsg
-hi link httpResultJsonBody  Debug
 
 let b:current_syntax = "httpResult"
