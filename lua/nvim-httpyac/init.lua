@@ -3,6 +3,38 @@ local M = {}
 
 local abidibo_nvim_httpyac = vim.api.nvim_create_augroup("NVIM_HTTPYAC", { clear = true })
 
+local function get_named_requests()
+    local requests = {}
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    for i, line in ipairs(lines) do
+        local name = line:match("# *@name *(.+)")
+        if name then
+            table.insert(requests, { name = name, line = i })
+        end
+    end
+    return requests
+end
+
+local function show_request_picker()
+    local requests = get_named_requests()
+    local request_names = {}
+    for _, req in ipairs(requests) do
+        table.insert(request_names, req.name)
+    end
+
+    vim.ui.select(request_names, { prompt = "Select a request:" }, function(choice)
+        if not choice then
+            return
+        end
+        for _, req in ipairs(requests) do
+            if req.name == choice then
+                M.exec_httpyac({ args = { "-l " .. req.line } })
+                break
+            end
+        end
+    end)
+end
+
 M.exec_httpyac = function(opts)
     if opts == nil then
         opts = {}
@@ -53,6 +85,10 @@ vim.api.nvim_create_autocmd("FileType", {
             local curlineNumber = vim.api.nvim_win_get_cursor(0)[1]
             M.exec_httpyac({ args = { "-l " .. curlineNumber }, userArgs = opts.fargs })
         end, { nargs = "*" })
+
+        vim.api.nvim_create_user_command("NvimHttpYacPicker", function()
+            show_request_picker()
+        end, { nargs = 0 })
     end,
 })
 

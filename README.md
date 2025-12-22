@@ -25,6 +25,7 @@ return {
     -- if you want to set up the keymaps
     vim.keymap.set('n', '<Leader>rr', '<cmd>:NvimHttpYac<CR>', { desc='Run request'})
     vim.keymap.set('n', '<Leader>ra', '<cmd>:NvimHttpYacAll<CR>', { desc='Run all requests'})
+    vim.keymap.set('n', '<Leader>rp', '<cmd>:NvimHttpYacPicker<CR>', { desc='Run named request'})
   end
 }
 ```
@@ -36,6 +37,7 @@ return {
 
 - **NvimHttpYac**: executes the request under the cursor
 - **NvimHttpYacAll**: executes all the requests
+- **NvimHttpYacPicker**: shows a picker with all the named requests
 
 Both commands take optional parameters that are passed to `httpyac`.
 E.g. to use a specific dev environment call `:NvimHttpYac --env dev`
