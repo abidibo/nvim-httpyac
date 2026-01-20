@@ -1,7 +1,7 @@
 local M = {}
 M.buffer_number = -1
 
-M.open_buffer = function()
+M.open_buffer = function(output_view)
     -- Get a boolean that tells us if the buffer number is visible anymore.
     -- :help bufwinnr
     local buffer_visible = vim.api.nvim_call_function("bufwinnr", { M.buffer_number }) ~= -1
@@ -9,7 +9,11 @@ M.open_buffer = function()
     if M.buffer_number == -1 or not buffer_visible then
         -- Create a new buffer with the name "HTTPYAC_OUT".
         -- Same name will reuse the current buffer.
-        vim.api.nvim_command("botright vsplit HTTPYAC_OUT")
+        local cmd = "botright vsplit HTTPYAC_OUT"
+        if output_view == "horizontal" then
+            cmd = "botright split HTTPYAC_OUT"
+        end
+        vim.api.nvim_command(cmd)
 
         -- Collect the buffer's number.
         M.buffer_number = vim.api.nvim_get_current_buf()

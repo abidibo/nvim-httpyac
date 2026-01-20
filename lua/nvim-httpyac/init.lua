@@ -35,6 +35,10 @@ local function show_request_picker()
     end)
 end
 
+M.config = {
+    output_view = "vertical",
+}
+
 M.exec_httpyac = function(opts)
     if opts == nil then
         opts = {}
@@ -62,7 +66,7 @@ M.exec_httpyac = function(opts)
     vim.api.nvim_command("w! " .. tmp_file_path)
     --
     -- open split buffer
-    B.open_buffer()
+    B.open_buffer(M.config.output_view)
     -- execute a shell command
     local out = vim.fn.system("httpyac " .. tmp_file_path .. " " .. str_args)
 
@@ -92,7 +96,8 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
-function M.setup()
+function M.setup(opts)
+    M.config = vim.tbl_deep_extend("force", M.config, opts or {})
     -- Change ft to http for http extension
     vim.filetype.add({ extension = { http = "http" } })
 end

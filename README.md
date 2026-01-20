@@ -21,7 +21,9 @@ With [LazyVim](https://github.com/LazyVim/LazyVim):
 return {
   "abidibo/nvim-httpyac",
   config = function ()
-    require('nvim-httpyac').setup()
+    require('nvim-httpyac').setup({
+      output_view = "vertical" -- "vertical" | "horizontal"
+    })
     -- if you want to set up the keymaps
     vim.keymap.set('n', '<Leader>rr', '<cmd>:NvimHttpYac<CR>', { desc='Run request'})
     vim.keymap.set('n', '<Leader>ra', '<cmd>:NvimHttpYacAll<CR>', { desc='Run all requests'})
@@ -29,6 +31,12 @@ return {
   end
 }
 ```
+
+## Configuration
+
+You can configure the plugin by passing a table to the `setup` function.
+
+- `output_view`: Defines how the output window is opened. Can be `"vertical"` (default) or `"horizontal"`.
 
 ## Commands
 
