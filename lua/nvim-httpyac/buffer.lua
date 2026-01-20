@@ -25,9 +25,13 @@ end
 
 M.log = function(data)
     if data then
+        local lines = data
+        if type(data) == "string" then
+            lines = vim.split(data, "\n")
+        end
         -- Append the data.
         vim.api.nvim_set_option_value("readonly", false, { buf = M.buffer_number })
-        vim.api.nvim_buf_set_text(M.buffer_number, 0, 0, -1, -1, vim.split(data, "\n"))
+        vim.api.nvim_buf_set_text(M.buffer_number, 0, 0, -1, -1, lines)
         vim.api.nvim_set_option_value("readonly", true, { buf = M.buffer_number })
         -- Mark as not modified, otherwise you'll get an error when attempting to exit vim.
         vim.api.nvim_set_option_value("modified", false, { buf = M.buffer_number })

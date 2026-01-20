@@ -61,19 +61,43 @@ M.exec_httpyac = function(opts)
     end
 
     -- create a tmp copy of the file
-    local tmp_file_path = vim.fn.expand("%:p:h") .. "/.tmp_httpyac_" .. vim.fn.expand("%:t")
+    local tmp_file_path = vim.fn.expand("%:p:h") .. "/.tmp_httpyac_" .. os.time() .. "_" .. vim.fn.expand("%:t")
     -- save current buffer
     vim.api.nvim_command("w! " .. tmp_file_path)
-    --
-    -- open split buffer
-    B.open_buffer(M.config.output_view)
-    -- execute a shell command
-    local out = vim.fn.system("httpyac " .. tmp_file_path .. " " .. str_args)
+    
+    vim.notify("Running httpyac...", vim.log.levels.INFO)
 
-    -- remove tmp file
-    vim.fn.delete(tmp_file_path)
+    local stdout_data = {}
 
-    B.log(out)
+    local function on_stdout(_, data, _)
+        if data then
+            for _, line in ipairs(data) do
+                table.insert(stdout_data, line)
+            end
+        end
+    end
+
+    local function on_exit(_, code, _)
+        -- remove tmp file
+        vim.fn.delete(tmp_file_path)
+
+        if code == 0 then
+            vim.schedule(function()
+                B.open_buffer(M.config.output_view)
+                B.log(stdout_data)
+            end)
+        else
+            vim.schedule(function()
+                vim.notify("HttpYac failed with code " .. code, vim.log.levels.ERROR)
+            end)
+        end
+    end
+
+    vim.fn.jobstart("httpyac " .. tmp_file_path .. " " .. str_args, {
+        on_stdout = on_stdout,
+        on_exit = on_exit,
+        stdout_buffered = true,
+    })
 end
 
 vim.api.nvim_create_autocmd("FileType", {
