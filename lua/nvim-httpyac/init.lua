@@ -113,6 +113,23 @@ local function show_env_picker()
     end)
 end
 
+-- Scans backwards from the cursor to find the # @name of the enclosing request block.
+-- Stops at a ### separator so names from a previous request are not mistaken.
+local function resolve_name_at_cursor()
+    local cursor_line = vim.api.nvim_win_get_cursor(0)[1]
+    local lines = vim.api.nvim_buf_get_lines(0, 0, cursor_line, false)
+    for i = #lines, 1, -1 do
+        if lines[i]:match("^###") then
+            break
+        end
+        local name = lines[i]:match(NAME_PREFIX .. "(.+)")
+        if name then
+            return name
+        end
+    end
+    return nil
+end
+
 local function get_named_requests()
     local requests = {}
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
@@ -232,7 +249,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
         vim.api.nvim_create_user_command("NvimHttpYac", function(opts)
             local curlineNumber = vim.api.nvim_win_get_cursor(0)[1]
-            M.exec_httpyac({ args = { "-l " .. curlineNumber }, userArgs = opts.fargs })
+            M.exec_httpyac({ args = { "-l " .. curlineNumber }, userArgs = opts.fargs, name = resolve_name_at_cursor() })
         end, { nargs = "*" })
 
         vim.api.nvim_create_user_command("NvimHttpYacPicker", function()
