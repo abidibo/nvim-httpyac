@@ -1,5 +1,8 @@
 local B = require("nvim-httpyac.buffer")
+local S = require("nvim-httpyac.sequences")
 local M = {}
+
+local NAME_PREFIX = "# *@name *"
 
 local abidibo_nvim_httpyac = vim.api.nvim_create_augroup("NVIM_HTTPYAC", { clear = true })
 
@@ -114,7 +117,7 @@ local function get_named_requests()
     local requests = {}
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
     for i, line in ipairs(lines) do
-        local name = line:match("# *@name *(.+)")
+        local name = line:match(NAME_PREFIX .. "(.+)")
         if name then
             table.insert(requests, { name = name, line = i })
         end
@@ -135,7 +138,7 @@ local function show_request_picker()
         end
         for _, req in ipairs(requests) do
             if req.name == choice then
-                M.exec_httpyac({ args = { "-l " .. req.line } })
+                M.exec_httpyac({ args = { "-l " .. req.line }, name = req.name })
                 break
             end
         end
@@ -157,6 +160,10 @@ M.exec_httpyac = function(opts)
     if opts.userArgs == nil then
         opts.userArgs = {}
     end
+
+    -- Captured before async job so closures below have stable values.
+    local captured_file = vim.fn.expand("%:p")
+    local captured_name = opts.name
 
     local str_args = ""
     for _, arg in pairs(opts.args) do
@@ -195,6 +202,7 @@ M.exec_httpyac = function(opts)
         vim.fn.delete(tmp_file_path)
 
         if code == 0 then
+            S.capture(captured_file, captured_name)
             vim.schedule(function()
                 B.open_buffer(M.config.output_view)
                 B.log(stdout_data)
@@ -238,6 +246,14 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.api.nvim_create_user_command("NvimHttpYacEnvClear", function()
             M.current_env = nil
             vim.notify("Environment cleared", vim.log.levels.INFO)
+        end, { nargs = 0 })
+
+        vim.api.nvim_create_user_command("NvimHttpYacSequence", function()
+            S.toggle_recording()
+        end, { nargs = 0 })
+
+        vim.api.nvim_create_user_command("NvimHttpYacSequencePicker", function()
+            S.show_picker(M.config, M.current_env)
         end, { nargs = 0 })
     end,
 })
