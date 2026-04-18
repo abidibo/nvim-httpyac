@@ -134,7 +134,7 @@ function M.run_sequence(seq, config, current_env)
                 vim.schedule(function()
                     vim.fn.delete(tmp)
                     if code == 0 then
-                        B.append(stdout_data)
+                        if index == 1 then B.log(stdout_data) else B.append(stdout_data) end
                         run_next()
                     else
                         vim.notify(
