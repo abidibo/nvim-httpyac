@@ -59,6 +59,7 @@ return {
     vim.keymap.set("n", "<Leader>rc", "<cmd>NvimHttpYacEnvClear<CR>",       { desc = "Clear environment" })
     vim.keymap.set("n", "<Leader>rq", "<cmd>NvimHttpYacSequence<CR>",       { desc = "Toggle sequence recording" })
     vim.keymap.set("n", "<Leader>rs", "<cmd>NvimHttpYacSequencePicker<CR>", { desc = "Sequence picker" })
+    vim.keymap.set("n", "<Leader>ry", "<cmd>NvimHttpYacCopyCmd<CR>",        { desc = "Copy httpyac command to clipboard" })
   end,
 }
 ```
@@ -76,15 +77,16 @@ return {
 > [!TIP]
 > You don't need to save the file first — the current buffer content is what gets executed.
 
-| Command                     | Description                                                                                   |
-| --------------------------- | --------------------------------------------------------------------------------------------- |
-| `:NvimHttpYac`              | Execute the request under the cursor                                                          |
-| `:NvimHttpYacAll`           | Execute all requests in the buffer                                                            |
-| `:NvimHttpYacPicker`        | Pick a named request from a list                                                              |
-| `:NvimHttpYacEnv`           | Select an environment (sticky across subsequent requests)                                     |
-| `:NvimHttpYacEnvClear`      | Clear the active environment                                                                  |
-| `:NvimHttpYacSequence`      | Toggle sequence recording; on stop, prompts for a name (ESC to discard)                       |
-| `:NvimHttpYacSequencePicker`| Browse saved sequences with a Run/Delete menu                                                 |
+| Command                     | Description                                                                                    |
+| --------------------------- | ---------------------------------------------------------------------------------------------- |
+| `:NvimHttpYac`              | Execute the request under the cursor                                                           |
+| `:NvimHttpYacAll`           | Execute all requests in the buffer                                                             |
+| `:NvimHttpYacPicker`        | Pick a named request from a list                                                               |
+| `:NvimHttpYacEnv`           | Select an environment (sticky across subsequent requests)                                      |
+| `:NvimHttpYacEnvClear`      | Clear the active environment                                                                   |
+| `:NvimHttpYacSequence`      | Toggle sequence recording; on stop, prompts for a name (ESC to discard)                        |
+| `:NvimHttpYacSequencePicker`| Browse saved sequences with a Run/Delete menu                                                  |
+| `:NvimHttpYacCopyCmd`       | Copy the CLI command for the request under the cursor to the system clipboard (in a subshell)  |
 
 The first three commands accept extra arguments that are forwarded to `httpyac`. For example:
 
