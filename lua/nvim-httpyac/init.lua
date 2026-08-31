@@ -200,7 +200,7 @@ M.exec_httpyac = function(opts)
     local tmp_file_path = vim.fn.expand("%:p:h") .. "/.tmp_httpyac_" .. os.time() .. "_" .. vim.fn.expand("%:t")
     -- save current buffer
     vim.api.nvim_command("w! " .. tmp_file_path)
-    
+
     local env_info = M.current_env and (" [env: " .. M.current_env .. "]") or ""
     vim.notify("Running httpyac..." .. env_info, vim.log.levels.INFO)
 
@@ -238,6 +238,34 @@ M.exec_httpyac = function(opts)
     })
 end
 
+local function copy_request_cmd()
+    -- Check if the current buffer has unsaved modifications
+    if vim.bo.modified then
+        vim.notify("nvim-httpyac: Buffer has unsaved changes. Please save the file before copying.", vim.log.levels.WARN)
+        return
+    end
+    local file_dir = vim.fn.expand("%:p:h")
+    local file_name = vim.fn.expand("%:t")
+    -- Get the line number of the cursor (1-indexed)
+    local curlineNumber = vim.api.nvim_win_get_cursor(0)[1]
+
+    -- Build argument to execute only the request at the cursor line
+    local str_args = " -l " .. curlineNumber
+    -- If a sticky environment is currently active in the plugin, append it
+    if M.current_env then
+        str_args = str_args .. " --env " .. M.current_env
+    end
+
+    -- Format command with a subshell (cd into file directory first) to avoid httpyac's cwd scoping issue
+    local cli_cmd = string.format("(cd %s && httpyac %s%s)",
+        vim.fn.shellescape(file_dir),
+        vim.fn.shellescape(file_name),
+        str_args
+    )
+    vim.fn.setreg("+", cli_cmd)
+    vim.notify("Copied: " .. cli_cmd, vim.log.levels.INFO)
+end
+
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "http",
     group = abidibo_nvim_httpyac,
@@ -271,6 +299,10 @@ vim.api.nvim_create_autocmd("FileType", {
 
         vim.api.nvim_create_user_command("NvimHttpYacSequencePicker", function()
             S.show_picker(M.config, M.current_env)
+        end, { nargs = 0 })
+
+        vim.api.nvim_create_user_command("NvimHttpYacCopyCmd", function()
+            copy_request_cmd()
         end, { nargs = 0 })
     end,
 })
